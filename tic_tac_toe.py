@@ -22,21 +22,21 @@ def ask_for_marker():
     '''
 
     marker = ''
-    markers = {"player1": '', "player2": ''}
+    markers = {"Player1": '', "Player2": ''}
 
     while marker != 'X' and marker != 'O':
         marker = input("Player 1's Marker (O or X) =>")
         marker = marker.upper()
 
     if marker == 'O':
-        markers['player1'] = marker
-        markers['player2'] = 'X'
+        markers['Player1'] = marker
+        markers['Player2'] = 'X'
     else:
-        markers['player1'] = marker
-        markers['player2'] = 'O'
+        markers['Player1'] = marker
+        markers['Player2'] = 'O'
 
-    print(f"Player-1 : {markers['player1']}")
-    print(f"Player-2 : {markers['player2']}")
+    print(f"Player-1 : {markers['Player1']}")
+    print(f"Player-2 : {markers['Player2']}")
     print('\n')
 
     return markers
@@ -95,69 +95,44 @@ def again_start():
         init()
 
 
-def player1_turn(marker, board):
-    """
-    Take input and does calculations then either declare winner or pass on to player 2
-    :param marker: to get player's marker
-    :param board: to get status of the game board
-    :return: --
-    """
-    marker_player = marker['player1']
-    print(f"Player 1's ({marker_player}) Turn :-")
-
-    if space_in_board(board):
-        user_number = int(input("Enter Number Between 1 to 9: "))
-
-        if user_number in range(1, 10):
-            if space_on_place(user_number, board):
-                board = place_maker(user_number, marker['player1'], board)
-                if win_check(board, marker['player1']):
-                    display_board(board)
-                    print("Player 1 Won!!")
-                    again_start()
-                else:
-                    display_board(board)
-                    player2_turn(marker, board)
-            else:
-                print("Place Already Filled!!")
-                player1_turn(marker, board)
-        else:
-            print("Wrong Input!!")
-            player1_turn(marker, board)
+def change_player(marker, board, recent_player):
+    if recent_player == "Player1":
+        player_turn(marker, board, "Player2")
     else:
-        print("Match Drawn!!")
-        again_start()
+        player_turn(marker, board, "Player1")
 
 
-def player2_turn(marker, board):
+def player_turn(marker, board, player):
     """
     Take input and does calculations then either declare winner or pass on to player 2
     :param marker: to get player's marker
     :param board: to get status of the game board
-    :return: --
+    :param player: recent playing player
+    :return:
     """
-    marker_player = marker['player2']
-    print(f"Player 2's ({marker_player}) Turn :-")
+    marker_player = marker[player]
+    print(f"{player}'s ({marker_player}) Turn :-")
     if space_in_board(board):
         user_number = int(input("Enter Number Between 1 to 9: "))
 
         if user_number in range(1, 10):
 
             if space_on_place(user_number, board):
-                board = place_maker(user_number, marker['player2'], board)
-                if win_check(board, marker['player2']):
+                board = place_maker(user_number, marker[player], board)
+                if win_check(board, marker[player]):
                     display_board(board)
-                    print("Player 2 Won!!")
+                    print(f"{player} Won!!")
                     again_start()
                 else:
                     display_board(board)
-                    player1_turn(marker, board)
+                    change_player(marker, board, player)
+
             else:
                 print("Place Already Filled.")
-                player2_turn(marker, board)
+                change_player(marker, board, player)
         else:
             print("Wrong Input!!")
-            player2_turn(marker, board)
+            change_player(marker, board, player)
     else:
         print("Match Drawn!!")
         again_start()
@@ -172,9 +147,10 @@ def init():
 
     if random.randint(0, 1) == 0:
         display_board(board)
-        player1_turn(markers, board)
+        player_turn(markers, board, "Player1")
     else:
         display_board(board)
-        player2_turn(markers, board)
+        player_turn(markers, board, "Player2")
+
 
 init()
